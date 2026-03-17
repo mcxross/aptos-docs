@@ -2,10 +2,43 @@ import { Copy, ThumbsDown, ThumbsUp } from "lucide-react";
 import type React from "react";
 import { type ComponentProps, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
+import bashLang from "react-syntax-highlighter/dist/cjs/languages/prism/bash";
+import goLang from "react-syntax-highlighter/dist/cjs/languages/prism/go";
+import javascriptLang from "react-syntax-highlighter/dist/cjs/languages/prism/javascript";
+import jsonLang from "react-syntax-highlighter/dist/cjs/languages/prism/json";
+import pythonLang from "react-syntax-highlighter/dist/cjs/languages/prism/python";
+import rustLang from "react-syntax-highlighter/dist/cjs/languages/prism/rust";
+import solidityLang from "react-syntax-highlighter/dist/cjs/languages/prism/solidity";
+import tomlLang from "react-syntax-highlighter/dist/cjs/languages/prism/toml";
+import tsxLang from "react-syntax-highlighter/dist/cjs/languages/prism/tsx";
+import typescriptLang from "react-syntax-highlighter/dist/cjs/languages/prism/typescript";
+import yamlLang from "react-syntax-highlighter/dist/cjs/languages/prism/yaml";
+import oneDark from "react-syntax-highlighter/dist/cjs/styles/prism/one-dark";
 import remarkGfm from "remark-gfm";
+import moveLang from "./prism-move";
 import type { Message } from "./types";
+
+// CJS modules export as { default: fn }, extract the actual language function
+type LangMod = Parameters<typeof SyntaxHighlighter.registerLanguage>[1];
+const getLang = (mod: unknown): LangMod => {
+  if (typeof mod === "function") return mod as LangMod;
+  const m = mod as { default: LangMod };
+  return m.default;
+};
+
+SyntaxHighlighter.registerLanguage("bash", getLang(bashLang));
+SyntaxHighlighter.registerLanguage("go", getLang(goLang));
+SyntaxHighlighter.registerLanguage("javascript", getLang(javascriptLang));
+SyntaxHighlighter.registerLanguage("json", getLang(jsonLang));
+SyntaxHighlighter.registerLanguage("python", getLang(pythonLang));
+SyntaxHighlighter.registerLanguage("rust", getLang(rustLang));
+SyntaxHighlighter.registerLanguage("solidity", getLang(solidityLang));
+SyntaxHighlighter.registerLanguage("toml", getLang(tomlLang));
+SyntaxHighlighter.registerLanguage("tsx", getLang(tsxLang));
+SyntaxHighlighter.registerLanguage("typescript", getLang(typescriptLang));
+SyntaxHighlighter.registerLanguage("yaml", getLang(yamlLang));
+SyntaxHighlighter.registerLanguage("move", moveLang);
 
 function CodeBlock({ className, children }: { className?: string; children?: React.ReactNode }) {
   const [isCopied, setIsCopied] = useState(false);
@@ -26,8 +59,8 @@ function CodeBlock({ className, children }: { className?: string; children?: Rea
     return <code>{children}</code>;
   }
 
-  const language = match ? match[1] : "move";
-  const finalLanguage = language === "move" ? "rust" : language;
+  // Default to "move" for unspecified languages (common in Aptos docs)
+  const finalLanguage = match ? match[1] : "move";
 
   const childArray = Array.isArray(children) ? children : [children];
   const content = childArray

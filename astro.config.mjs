@@ -26,6 +26,7 @@ import { SITE_TITLES, SUPPORTED_LANGUAGES } from "./src/config/i18n";
 import onDemandDirective from "./src/integrations/client-on-demand/register.js";
 import { devServerFileWatcher } from "./src/integrations/dev-server-file-watcher";
 import { firebaseIntegration } from "./src/integrations/firebase";
+import { llmsTxtIndex } from "./src/integrations/llms-txt-index";
 import { monacoEditorIntegration } from "./src/integrations/monacoEditor";
 import { ogImagesIntegration } from "./src/integrations/ogImages";
 import { ENV } from "./src/lib/env";
@@ -152,6 +153,25 @@ export default defineConfig({
         }),
         starlightLlmsTxt({
           rawContent: true,
+          description:
+            "Developer documentation for the Aptos blockchain — Move smart contracts, SDKs, APIs, indexer, node operations, and AI tools.",
+          details: [
+            "For AI coding tools, install the Aptos MCP server: `npx @aptos-labs/aptos-mcp`",
+            "It gives your IDE direct access to Aptos APIs, on-chain data, and Move contract helpers.",
+            "See <https://aptos.dev/build/ai> for setup guides (Claude Code, Cursor, and more).",
+          ].join("\n"),
+          optionalLinks: [
+            {
+              label: "Aptos MCP Server",
+              url: "https://www.npmjs.com/package/@aptos-labs/aptos-mcp",
+              description: "MCP server for AI coding tools",
+            },
+            {
+              label: "Aptos GitHub",
+              url: "https://github.com/aptos-labs",
+              description: "Official source code repositories",
+            },
+          ],
           promote: [
             "index*",
             "get-started",
@@ -197,6 +217,10 @@ export default defineConfig({
       sidebar,
       customCss: ["./src/styles/global.css", "katex/dist/katex.min.css"],
     }),
+    // Override the starlight-llms-txt plugin's /llms.txt index with a structured
+    // version that lists page titles, descriptions, and per-page .md URLs.
+    // Must be after Starlight so our injected route takes priority.
+    llmsTxtIndex(),
     sitemap({
       serialize(item) {
         item.lastmod = new Date().toISOString();
@@ -274,6 +298,28 @@ export default defineConfig({
     resolve: {
       alias: {
         "~/images": fileURLToPath(new URL("./src/assets/images", import.meta.url)),
+      },
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            // Split Firebase into its own chunk for better caching
+            if (id.includes("@firebase")) {
+              return "vendor-firebase";
+            }
+            // Split React ecosystem into its own chunk
+            if (
+              id.includes("node_modules/react/") ||
+              id.includes("node_modules/react-dom/") ||
+              id.includes("node_modules/react-markdown/") ||
+              id.includes("node_modules/react-syntax-highlighter/")
+            ) {
+              return "vendor-react";
+            }
+            return undefined;
+          },
+        },
       },
     },
   },
