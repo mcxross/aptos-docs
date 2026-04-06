@@ -9,8 +9,8 @@
  * regression guard.
  */
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
@@ -40,6 +40,70 @@ function countMermaidBlocks(filePath: string): number {
 
 function readAstroConfig(): string {
   return readFileSync(join(ROOT, "astro.config.mjs"), "utf-8");
+}
+
+/**
+ * HTML for the blockchain-deep-dive doc page.
+ * Do not match on URL substring alone: many pages embed that path in the sidebar
+ * before `network/blockchain/...` is visited, which broke CI (wrong file, no mermaid).
+ */
+function findBlockchainDeepDiveHtml(distClient: string): string | null {
+  if (!existsSync(distClient)) return null;
+  const preferred = [
+    join(distClient, "network/blockchain/blockchain-deep-dive/index.html"),
+    join(distClient, "zh/network/blockchain/blockchain-deep-dive/index.html"),
+    join(distClient, "network/blockchain/blockchain-deep-dive.html"),
+    join(distClient, "zh/network/blockchain/blockchain-deep-dive.html"),
+  ];
+  for (const p of preferred) {
+    if (existsSync(p)) return p;
+  }
+  const stack: string[] = [distClient];
+  while (stack.length > 0) {
+    const dir = stack.pop() as string;
+    let names: string[];
+    try {
+      names = readdirSync(dir);
+    } catch {
+      continue;
+    }
+    for (const name of names) {
+      const full = join(dir, name);
+      let st: ReturnType<typeof statSync>;
+      try {
+        st = statSync(full);
+      } catch {
+        continue;
+      }
+      if (st.isDirectory()) {
+        stack.push(full);
+      } else if (
+        st.isFile() &&
+        name.endsWith(".html") &&
+        full.includes(`${join("blockchain", "blockchain-deep-dive")}`)
+      ) {
+        return full;
+      }
+    }
+  }
+  return null;
+}
+
+function assertDistPresentForMermaidTests(distClient: string, legacyDistDir: string): void {
+  const clientExists = existsSync(distClient) && statSync(distClient).isDirectory();
+  const legacyExists = existsSync(legacyDistDir) && statSync(legacyDistDir).isDirectory();
+  if (!clientExists && !legacyExists) return;
+  const htmlPath = findBlockchainDeepDiveHtml(distClient);
+  const legacyOk =
+    legacyExists &&
+    readdirSync(legacyDistDir).some(
+      (f) => f.startsWith("blockchain-deep-dive") && f.endsWith(".mjs"),
+    );
+  if (htmlPath || legacyOk) return;
+  const rel = relative(ROOT, distClient) || distClient;
+  throw new Error(
+    `Build output exists under ${rel} but no HTML was found at network/blockchain/blockchain-deep-dive (or zh/...). Update the mermaid test locator if doc routes changed.`,
+  );
 }
 
 interface PkgJson {
@@ -133,44 +197,64 @@ describe("Mermaid Rendering Validation", () => {
   });
 
   describe("Build output validation", () => {
-    const distDir = join(ROOT, "dist/server/chunks");
+    const distClient = join(ROOT, "dist/client");
+    const legacyDistDir = join(ROOT, "dist/server/chunks");
+    const htmlFile = findBlockchainDeepDiveHtml(distClient);
+    const hasHtml = htmlFile !== null;
+    const hasLegacy = existsSync(legacyDistDir);
 
-    it.skipIf(!existsSync(distDir))(
+    it("should resolve blockchain-deep-dive HTML when client build output exists", () => {
+      assertDistPresentForMermaidTests(distClient, legacyDistDir);
+    });
+
+    it.skipIf(!hasHtml && !hasLegacy)(
       "should render mermaid blocks as <pre class='mermaid'>, not as Expressive Code",
       () => {
-        const chunks = readdirSync(distDir).filter(
-          (f) => f.startsWith("blockchain-deep-dive") && f.endsWith(".mjs"),
-        );
-        expect(chunks.length).toBeGreaterThan(0);
-
-        for (const chunk of chunks) {
-          const content = readFileSync(join(distDir, chunk), "utf-8");
-          if (content.includes("graph LR") || content.includes("graph TD")) {
-            expect(content).toContain('class=\\"mermaid\\"');
-            expect(content).not.toMatch(/expressive-code.*language-mermaid/);
+        if (hasHtml) {
+          const content = readFileSync(htmlFile, "utf-8");
+          expect(content).toContain('class="mermaid"');
+          expect(content).not.toMatch(/expressive-code.*language-mermaid/);
+        } else {
+          const chunks = readdirSync(legacyDistDir).filter(
+            (f) => f.startsWith("blockchain-deep-dive") && f.endsWith(".mjs"),
+          );
+          expect(chunks.length).toBeGreaterThan(0);
+          for (const chunk of chunks) {
+            const content = readFileSync(join(legacyDistDir, chunk), "utf-8");
+            if (content.includes("graph LR") || content.includes("graph TD")) {
+              expect(content).toContain('class=\\"mermaid\\"');
+              expect(content).not.toMatch(/expressive-code.*language-mermaid/);
+            }
           }
         }
       },
     );
 
-    it.skipIf(!existsSync(distDir))(
+    it.skipIf(!hasHtml && !hasLegacy)(
       "should preserve mermaid diagram content in the rendered output",
       () => {
-        const chunks = readdirSync(distDir).filter(
-          (f) => f.startsWith("blockchain-deep-dive") && f.endsWith(".mjs"),
-        );
-
-        let foundMermaid = false;
-        for (const chunk of chunks) {
-          const content = readFileSync(join(distDir, chunk), "utf-8");
-          const mermaidMatch = /pre class=\\"mermaid\\"[^>]*>(.*?)(?=<\/pre>)/s.exec(content);
+        if (hasHtml) {
+          const content = readFileSync(htmlFile, "utf-8");
+          const mermaidMatch = /pre class="mermaid"[^>]*>(.*?)(?=<\/pre>)/s.exec(content);
+          expect(mermaidMatch).not.toBeNull();
           if (mermaidMatch) {
-            foundMermaid = true;
-            const diagramContent = mermaidMatch[1];
-            expect(diagramContent).toMatch(/graph\s+(LR|TD|TB|RL|BT)/);
+            expect(mermaidMatch[1]).toMatch(/graph\s+(LR|TD|TB|RL|BT)/);
           }
+        } else {
+          const chunks = readdirSync(legacyDistDir).filter(
+            (f) => f.startsWith("blockchain-deep-dive") && f.endsWith(".mjs"),
+          );
+          let foundMermaid = false;
+          for (const chunk of chunks) {
+            const content = readFileSync(join(legacyDistDir, chunk), "utf-8");
+            const mermaidMatch = /pre class=\\"mermaid\\"[^>]*>(.*?)(?=<\/pre>)/s.exec(content);
+            if (mermaidMatch) {
+              foundMermaid = true;
+              expect(mermaidMatch[1]).toMatch(/graph\s+(LR|TD|TB|RL|BT)/);
+            }
+          }
+          expect(foundMermaid).toBe(true);
         }
-        expect(foundMermaid).toBe(true);
       },
     );
 
