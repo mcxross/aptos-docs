@@ -5,7 +5,7 @@ sidebar:
   label: "构建交易"
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
 Kaptos Kotlin SDK 通过 `aptos.transactions` 提供基于命名空间的交易操作。
 
@@ -223,3 +223,15 @@ val simResult = aptos.transactions.simulate(
   senderPublicKey = alice.publicKey,
 )
 ```
+
+## 后续步骤 (Next Steps)
+
+探索高级交易模式与隐私保护功能：
+
+<CardGrid>
+  <LinkCard title="赞助交易" href="/zh/build/sdks/community-sdks/kotlin-sdk/sponsored-transactions" description="由费用赞助者代用户支付交易 Gas 费用。" />
+
+  <LinkCard title="加密交易" href="/zh/build/sdks/community-sdks/kotlin-sdk/encrypted-transactions" description="使用批量加密提供 MEV 保护与防抢先交易。" />
+
+  <LinkCard title="机密资产" href="/zh/build/sdks/community-sdks/kotlin-sdk/confidential-assets" description="基于零知识证明的隐私余额与隐匿转账。" />
+</CardGrid>
