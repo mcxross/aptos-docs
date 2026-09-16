@@ -340,7 +340,13 @@ export const sidebar = [
                 items: [
                   "build/sdks/community-sdks/kotlin-sdk",
                   "build/sdks/community-sdks/kotlin-sdk/quickstart",
-                  "build/sdks/community-sdks/kotlin-sdk/account",
+                  group("build.group.sdks.community-sdks.kotlin-sdk.accounts", {
+                    collapsed: true,
+                    items: [
+                      "build/sdks/community-sdks/kotlin-sdk/account",
+                      "build/sdks/community-sdks/kotlin-sdk/account-abstraction",
+                    ],
+                  }),
                   group("build.group.sdks.community-sdks.kotlin-sdk.transactions", {
                     collapsed: true,
                     items: [

@@ -2,16 +2,18 @@
 title: "Creating and Managing Accounts"
 description: "Learn about the different account types in the Kaptos Kotlin SDK and how to create and manage them."
 sidebar:
-  label: "Accounts"
+  label: "Managing Accounts"
 ---
 
 import { Aside } from '@astrojs/starlight/components';
 
 The Kaptos Kotlin SDK supports multiple account types to handle various authentication schemes on the Aptos network. This page covers how to create and manage:
+
 - Legacy Ed25519 (`Ed25519Account` / `Account.generate()`)
 - SingleKey (`SingleKeyAccount`) with unified auth
 - MultiKey (`MultiKeyAccount`) for threshold signing
 - SDK-managed accounts via `Aptos` factory methods
+- Custom authentication schemes via [Account Abstraction](/build/sdks/community-sdks/kotlin-sdk/account-abstraction)
 
 ## Legacy Account (Ed25519)
 
@@ -94,3 +96,7 @@ Generating an account locally only creates the credentials. To use the account o
 ```kotlin
 aptos.faucet.fund(alice.accountAddress, 100_000_000UL)
 ```
+
+## Account Abstraction
+
+For custom verification logic through Move modules or deriving Aptos accounts from external wallets (such as Solana wallets with Sign-In with Solana), refer to the [Account Abstraction guide](/build/sdks/community-sdks/kotlin-sdk/account-abstraction).
