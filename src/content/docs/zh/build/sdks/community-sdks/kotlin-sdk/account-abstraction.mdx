@@ -1,6 +1,6 @@
 ---
 title: "账户抽象与 Solana 可派生账户"
-description: "在 Kaptos Kotlin SDK 中使用 Move 模块实现自定义交易认证逻辑，并在 Aptos 上使用跨链 Solana 账户。"
+description: "在 Kaptos 中使用 Move 模块实现自定义交易认证逻辑，并在 Aptos 上使用跨链 Solana 账户。"
 sidebar:
   label: "账户抽象"
 ---
@@ -9,7 +9,7 @@ import { Aside, Steps, CardGrid, LinkCard } from '@astrojs/starlight/components'
 
 Aptos 上的账户抽象 (Account Abstraction, AA) 允许账户利用 Move 智能合约定义可编程的验证逻辑，从而突破单密钥 Ed25519 或 Secp256k1 等原生密码学签名方案的限制。
 
-Kaptos Kotlin SDK 提供了全面的账户抽象支持：
+Kaptos 提供了全面的账户抽象支持：
 
 - **原生账户抽象 ([AIP-61](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-61.md))**：管理链上可调度身份验证器 (dispatchable authenticators) 并验证自定义 Move 认证函数。
 - **可派生账户抽象 ([AIP-113](https://github.com/aptos-foundation/AIPs/blob/main/aips/aip-113.md))**：无需预先在链上注册，即可根据抽象公钥身份在链下确定性派生 Aptos 账户地址。

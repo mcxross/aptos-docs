@@ -1,13 +1,13 @@
 ---
 title: "Building and Sending Transactions"
-description: "Learn how to build, sign, and submit transactions using the Kaptos Kotlin SDK."
+description: "Build, sign, and submit transactions on Aptos with Kaptos."
 sidebar:
   label: "Building Transactions"
 ---
 
 import { Aside, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-The Kaptos Kotlin SDK provides namespaced transaction operations via `aptos.transactions`.
+Kaptos provides namespaced transaction operations via `aptos.transactions`.
 
 <Aside type="note">
   All these methods return an `AptosResult<T>`. You can use `when` for pattern matching, or extension functions like `.map()`, `.fold()`, `.getOrNull()`, `.onSuccess()`, and `.onFailure()` to chain operations and handle errors.

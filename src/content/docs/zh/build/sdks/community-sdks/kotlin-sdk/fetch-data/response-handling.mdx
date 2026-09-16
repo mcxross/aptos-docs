@@ -1,6 +1,6 @@
 ---
 title: "处理 SDK 响应"
-description: "了解 Kaptos Kotlin SDK 中基于 AptosResult 的错误处理。"
+description: "了解 Kaptos 中基于 AptosResult 的错误处理与响应模型。"
 sidebar:
   label: "响应处理"
 ---
@@ -10,6 +10,7 @@ import { Aside, Steps, Tabs, TabItem, CardGrid, LinkCard } from '@astrojs/starli
 所有操作都返回 `AptosResult<T>`，它表示 `Success` 或 `Failure`。这确保了显式的错误处理。
 
 ### 使用 `when` 表达式
+
 ```kotlin
 when (val result = aptos.ledger.info()) {
   is AptosResult.Success -> println("Ledger version: ${result.value.version}")
@@ -18,6 +19,7 @@ when (val result = aptos.ledger.info()) {
 ```
 
 ### 扩展函数
+
 - `.map { }` - 转换成功值
 - `.flatMap { }` - 链接另一个 AptosResult 操作
 - `.fold(onSuccess = {}, onFailure = {})` - 归约为单个结果类型
@@ -50,6 +52,7 @@ val balance = aptos.accounts.getBalance(address, asset)
 ### 错误分类 (AptosError)
 
 `AptosError` 是一个具有多个变体的密封接口：
+
 - `AptosError.Transport` - 网络/HTTP 错误
 - `AptosError.Api` - REST API 错误（包含 `errorCode`，可选的 `vmErrorCode`）
 - `AptosError.Indexer` - GraphQL/索引器错误

@@ -1,13 +1,13 @@
 ---
 title: "构建并发送交易"
-description: "学习如何使用 Kaptos Kotlin SDK 构建、签名并提交交易。"
+description: "使用 Kaptos 构建、签名并提交 Aptos 交易。"
 sidebar:
   label: "构建交易"
 ---
 
 import { Aside, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-Kaptos Kotlin SDK 通过 `aptos.transactions` 提供基于命名空间的交易操作。
+Kaptos 通过 `aptos.transactions` 提供基于命名空间的交易操作。
 
 <Aside type="note">
   所有这些方法都返回一个 `AptosResult<T>`。您可以使用 `when` 进行模式匹配，或使用扩展函数（如 `.map()`、`.fold()`、`.getOrNull()`、`.onSuccess()` 和 `.onFailure()`）来链式调用并处理错误。
