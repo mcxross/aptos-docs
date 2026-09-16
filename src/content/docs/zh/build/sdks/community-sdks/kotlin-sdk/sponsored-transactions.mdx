@@ -21,44 +21,54 @@ import { Aside } from '@astrojs/starlight/components';
 所有方法均返回 `AptosResult<T>`，您可以使用 `when` 表达式或扩展函数来处理它。
 
 ```kotlin
-// 1. Build the transaction with the fee payer specified
+// 使用简写语法构建负载
+val payload = TransactionPayload.entryFunctionOf(
+  "0x1::aptos_account::transfer",
+  bob.accountAddress,
+  1_000_000UL,
+)
+
+// 1. 指定付费者构建交易
 val txn = aptos.transactions.buildFeePayer(
   sender = alice.accountAddress,
   payload = payload,
-  feePayer = sponsor.accountAddress
+  feePayer = sponsor.accountAddress,
 ).getOrNull()!!
 
-// 2. Sender signs
+// 2. 发送方签名
 val senderAuth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
 
-// 3. Fee payer signs
+// 3. 付费者签名
 val feePayerAuth = aptos.transactions.sign(signer = sponsor, transaction = txn).getOrNull()!!
 
-// 4. Submit with both authenticators
+// 4. 使用两个验证器提交交易
 val pending = aptos.transactions.submit(
   transaction = txn,
   senderAuthenticator = senderAuth,
-  feePayerAuthenticator = feePayerAuth
-)
+  feePayerAuthenticator = feePayerAuth,
+).getOrNull()!!
+
+// 5. 等待确认
+val confirmed = aptos.transactions.waitForTransaction(pending)
 ```
 
 <Aside>
-如果您正在使用外部的费用支付者服务（例如 Gas Station），而您没有赞助者的私钥，您可以为外部服务构建一个请求：
+  如果您正在使用外部的费用支付者服务（例如 Gas Station），而您没有赞助者的私钥，您可以为外部服务构建一个请求：
 
-```kotlin
-// Build with a zero-address placeholder (no feePayer specified)
-val txn = aptos.transactions.buildFeePayer(
-  sender = alice.accountAddress,
-  payload = payload,
-).getOrNull()!!
+  ```kotlin
+  // Build with a zero-address placeholder (no feePayer specified)
+  val txn = aptos.transactions.buildFeePayer(
+    sender = alice.accountAddress,
+    payload = payload,
+  ).getOrNull()!!
 
-// Sender signs the transaction
-val senderAuth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
+  // Sender signs the transaction
+  val senderAuth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
 
-// Create a request for an external Gas Station
-val request = aptos.transactions.externalFeePayerRequest(
-  transaction = txn,
-  senderAuthenticator = senderAuth,
-).getOrNull()!!
-```
+  // Create a request for an external Gas Station
+  val request = aptos.transactions.externalFeePayerRequest(
+    transaction = txn,
+    senderAuthenticator = senderAuth,
+  ).getOrNull()!!
+  ```
 </Aside>

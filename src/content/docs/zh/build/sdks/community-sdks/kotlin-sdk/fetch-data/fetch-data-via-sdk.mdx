@@ -57,15 +57,28 @@ val faBalance = aptos.accounts.getBalance(
   address,
   AccountAsset.fungibleAsset("0xa"),
 ).getOrNull()!!
+
+// 或通过视图函数简写读取代币余额
+val coinBalance = aptos.views.callOf<AptosCoin>(
+  function = "0x1::coin::balance",
+  address,
+).getOrNull()!!
 ```
 
 ## 通过 Move 视图函数读取
 
-使用 `views` 服务来评估 Move 模块中定义的视图函数：
+使用 `views` 服务来执行 Move 模块中定义的视图函数。`callOf` 简写语法会自动根据链上 ABI 验证参数，并将标准 Kotlin 类型强制转换为对应类型：
 
 ```kotlin
-val result = aptos.views.call(
+// 不带参数的简洁视图调用
+val result = aptos.views.callOf(
   function = "0x1::chain_id::get",
+).getOrNull()!!
+
+// 带有具体化泛型类型参数和推断参数的视图调用
+val balance = aptos.views.callOf<AptosCoin>(
+  function = "0x1::coin::balance",
+  address,
 ).getOrNull()!!
 ```
 

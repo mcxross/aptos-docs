@@ -4,26 +4,37 @@ description: "Kaptos 是一个由社区开发的、功能丰富的 Aptos 区块�
 sidebar:
   label: "Kaptos 概览"
 ---
+
 import { Aside, CardGrid, LinkCard, TabItem, Tabs } from '@astrojs/starlight/components';
 
 Kaptos 是一个强大、极具表现力的 Aptos 区块链 Kotlin Multiplatform SDK。它的特性包括基于命名空间的服务 API、受管理的生命周期，以及跨多个平台的完整类型安全。
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white" alt="Android"/>
-  <img src="https://img.shields.io/badge/iOS-000000?logo=ios&logoColor=white" alt="iOS"/>
-  <img src="https://img.shields.io/badge/tvOS-000000?logo=apple&logoColor=white" alt="tvOS"/>
-  <img src="https://img.shields.io/badge/watchOS-000000?logo=apple&logoColor=white" alt="watchOS"/>
-  <img src="https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white" alt="Node.js"/>
-  <img src="https://img.shields.io/badge/JVM-ED8B00?logo=openjdk&logoColor=white" alt="JVM"/>
-  <img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" alt="Linux"/>
-  <img src="https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white" alt="macOS"/>
-  <img src="https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white" alt="Windows"/>
+  <img src="https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white" alt="Android" />
+
+  <img src="https://img.shields.io/badge/iOS-000000?logo=ios&logoColor=white" alt="iOS" />
+
+  <img src="https://img.shields.io/badge/tvOS-000000?logo=apple&logoColor=white" alt="tvOS" />
+
+  <img src="https://img.shields.io/badge/watchOS-000000?logo=apple&logoColor=white" alt="watchOS" />
+
+  <img src="https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white" alt="Node.js" />
+
+  <img src="https://img.shields.io/badge/JVM-ED8B00?logo=openjdk&logoColor=white" alt="JVM" />
+
+  <img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" alt="Linux" />
+
+  <img src="https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white" alt="macOS" />
+
+  <img src="https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white" alt="Windows" />
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/maven-central/v/xyz.mcxross.kaptos/kaptos?label=Maven%20Central&color=blue" alt="Maven Central"/>
-  <img src="https://img.shields.io/nexus/s/xyz.mcxross.kaptos/kaptos?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Snapshot&color=orange" alt="Snapshot"/>
-  <img src="https://img.shields.io/badge/SDK_Reference-Dokka-purple" alt="SDK Reference"/>
+  <img src="https://img.shields.io/maven-central/v/xyz.mcxross.kaptos/kaptos?label=Maven%20Central&color=blue" alt="Maven Central" />
+
+  <img src="https://img.shields.io/nexus/s/xyz.mcxross.kaptos/kaptos?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Snapshot&color=orange" alt="Snapshot" />
+
+  <img src="https://img.shields.io/badge/SDK_Reference-Dokka-purple" alt="SDK Reference" />
 </p>
 
 ## 特性
@@ -38,99 +49,107 @@ Kaptos 是一个强大、极具表现力的 Aptos 区块链 Kotlin Multiplatform
 - **受管理的生命周期 (Managed Lifecycle):** 自动关闭的托管作用域 (`aptos { }`) 自动负责资源清理。
 
 <Aside type="note">
-Kaptos 目前正在积极开发中。请确保您使用的是最新版本，以获得所有新功能和 API 稳定性。
+  Kaptos 目前正在积极开发中。请确保您使用的是最新版本，以获得所有新功能和 API 稳定性。
 </Aside>
 
 ## 安装
 
 <Tabs>
   <TabItem label="Multiplatform">
-  ```kotlin
-  sourceSets {
-      val commonMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="JVM">
-  ```kotlin
-  dependencies {
-      implementation("xyz.mcxross.kaptos:kaptos:<version>")
-  }
-  ```
+    ```kotlin
+    dependencies {
+        implementation("xyz.mcxross.kaptos:kaptos:<version>")
+    }
+    ```
   </TabItem>
+
   <TabItem label="Android">
-  <Aside type="tip">
-  对于 Android 应用，建议确保您的应用已配置好网络权限。
-  </Aside>
-  ```kotlin
-  dependencies {
-      implementation("xyz.mcxross.kaptos:kaptos:<version>")
-  }
-  ```
+    <Aside type="tip">
+      对于 Android 应用，建议确保您的应用已配置好网络权限。
+    </Aside>
+
+    ```kotlin
+    dependencies {
+        implementation("xyz.mcxross.kaptos:kaptos:<version>")
+    }
+    ```
   </TabItem>
+
   <TabItem label="iOS">
-  ```kotlin
-  sourceSets {
-      val iosMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val iosMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="JS">
-  ```kotlin
-  sourceSets {
-      val jsMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="Linux">
-  ```kotlin
-  sourceSets {
-      val linuxX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val linuxX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="macOS">
-  ```kotlin
-  sourceSets {
-      val macosX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-      val macosArm64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val macosX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+        val macosArm64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="Windows">
-  ```kotlin
-  sourceSets {
-      val mingwX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val mingwX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
 </Tabs>
 
@@ -144,10 +163,11 @@ aptos(AptosConfig(network = Network.DEVNET)) {
   faucet.fund(alice.accountAddress, 100_000_000UL)
 
   val bob = account()
-  val payload = transactions.entryFunctionPayload(
+  val payload = TransactionPayload.entryFunctionOf(
     function = "0x1::coin::transfer",
-    typeArguments = listOf(TypeTag.from("0x1::aptos_coin::AptosCoin")),
-    arguments = listOf(MoveArgument.from(bob.accountAddress), MoveArgument.from(1_000_000UL)),
+    typeArguments = listOf("0x1::aptos_coin::AptosCoin"),
+    bob.accountAddress,
+    1_000_000UL,
   )
   val confirmed = transactions.submitAndWait(signer = alice, payload = payload)
 }
@@ -157,5 +177,6 @@ aptos(AptosConfig(network = Network.DEVNET)) {
 
 <CardGrid>
   <LinkCard title="快速入门指南" href="/zh/build/sdks/community-sdks/kotlin-sdk/quickstart" description="帮助您开始使用 Kaptos 的分步教程。" />
+
   <LinkCard title="GitHub 示例" href="https://github.com/mcxross/kaptos/tree/main/sample" description="在 Kaptos 仓库中探索完整的可用示例。" />
 </CardGrid>

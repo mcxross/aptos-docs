@@ -4,93 +4,108 @@ description: "Get started building on Aptos with the Kaptos Kotlin SDK."
 sidebar:
   label: "Quickstart"
 ---
+
 import { Aside, Steps } from '@astrojs/starlight/components';
 
 This guide will walk you through setting up Kaptos and performing your first transaction on the Aptos network.
 
 <Steps>
-1. **Install the SDK**
+  1. **Install the SDK**
 
-   Add the Kaptos dependency to your project.
-   
-   **Multiplatform:**
-   ```kotlin
-   sourceSets {
-       val commonMain by getting {
-           dependencies {
-               implementation("xyz.mcxross.kaptos:kaptos:<version>")
-           }
-       }
-   }
-   ```
-   
-   **JVM:**
-   ```kotlin
-   dependencies {
-       implementation("xyz.mcxross.kaptos:kaptos:<version>")
-   }
-   ```
+     Add the Kaptos dependency to your project.
 
-2. **Configure the client**
+     **Multiplatform:**
 
-   Initialize the `Aptos` client with your desired network configuration.
+     ```kotlin
+     sourceSets {
+         val commonMain by getting {
+             dependencies {
+                 implementation("xyz.mcxross.kaptos:kaptos:<version>")
+             }
+         }
+     }
+     ```
 
-   ```kotlin
-   val aptos = Aptos(AptosConfig(network = Network.DEVNET))
-   ```
-   
-   <Aside type="note">
-   Kaptos APIs work identically across all platforms thanks to Kotlin Multiplatform, whether you're targeting Android, iOS, JVM, or JS.
-   </Aside>
+     **JVM:**
 
-3. **Read chain data**
+     ```kotlin
+     dependencies {
+         implementation("xyz.mcxross.kaptos:kaptos:<version>")
+     }
+     ```
 
-   Access chain state through the various namespaced services available on the client.
+  2. **Configure the client**
 
-   ```kotlin
-   when (val result = aptos.ledger.info()) {
-     is AptosResult.Success -> println("Ledger version: ${result.value.version}")
-     is AptosResult.Failure -> println("Error: ${result.error.message}")
-   }
-   ```
+     Initialize the `Aptos` client with your desired network configuration.
 
-4. **Create and fund accounts**
+     ```kotlin
+     val aptos = Aptos(AptosConfig(network = Network.DEVNET))
+     ```
 
-   Generate new accounts and fund them using the `faucet` service.
+     <Aside type="note">
+       Kaptos APIs work identically across all platforms thanks to Kotlin Multiplatform, whether you're targeting Android, iOS, JVM, or JS.
+     </Aside>
 
-   ```kotlin
-   val alice = Account.generate()
-   val bob = Account.generate()
-   aptos.faucet.fund(alice.accountAddress, 100_000_000UL)
-   aptos.faucet.fund(bob.accountAddress, 100_000_000UL)
-   ```
+  3. **Read chain data**
 
-5. **Build and send a transaction**
+     Access chain state through the various namespaced services available on the client.
 
-   Build an entry function payload and submit the transaction via the `transactions` service.
+     ```kotlin
+     when (val result = aptos.ledger.info()) {
+       is AptosResult.Success -> println("Ledger version: ${result.value.version}")
+       is AptosResult.Failure -> println("Error: ${result.error.message}")
+     }
+     ```
 
-   ```kotlin
-   val payload = aptos.transactions.entryFunctionPayload(
-     function = "0x1::coin::transfer",
-     typeArguments = listOf(TypeTag.from("0x1::aptos_coin::AptosCoin")),
-     arguments = listOf(
-       MoveArgument.from(bob.accountAddress),
-       MoveArgument.from(1_000_000UL),
-     ),
-   )
-   val confirmed = aptos.transactions.submitAndWait(signer = alice, payload = payload)
-   ```
+  4. **Create and fund accounts**
 
-6. **Check the result**
+     Generate new accounts and fund them using the `faucet` service.
 
-   All operations return an `AptosResult`, allowing for clean success/failure handling.
+     ```kotlin
+     val alice = Account.generate()
+     val bob = Account.generate()
+     aptos.faucet.fund(alice.accountAddress, 100_000_000UL)
+     aptos.faucet.fund(bob.accountAddress, 100_000_000UL)
+     ```
 
-   ```kotlin
-   when (confirmed) {
-     is AptosResult.Success -> println("Transaction version: ${confirmed.value}")
-     is AptosResult.Failure -> println("Failed: ${confirmed.error.message}")
-   }
-   ```
+  5. **Build and send a transaction**
+
+     Build an entry function payload using shorthand arguments and execute the transaction through the explicit pipeline:
+
+     ```kotlin
+     // Build the payload using the concise shorthand
+     val payload = TransactionPayload.entryFunctionOf(
+       function = "0x1::coin::transfer",
+       typeArguments = listOf("0x1::aptos_coin::AptosCoin"),
+       bob.accountAddress,
+       1_000_000UL,
+     )
+
+     // Explicit pipeline: build, sign, submit, and wait
+     val txn = aptos.transactions.build(sender = alice.accountAddress, payload = payload).getOrNull()!!
+     val auth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
+     val pending = aptos.transactions.submit(transaction = txn, senderAuthenticator = auth).getOrNull()!!
+     val confirmed = aptos.transactions.waitForTransaction(pending)
+     ```
+
+     <Aside type="tip">
+       For routine transactions, you can also combine these steps using the all-in-one convenience method:
+
+       ```kotlin
+       val confirmed = aptos.transactions.submitAndWait(signer = alice, payload = payload)
+       ```
+     </Aside>
+
+  6. **Check the result**
+
+     All operations return an `AptosResult`, allowing for clean success/failure handling.
+
+     ```kotlin
+     when (confirmed) {
+       is AptosResult.Success -> println("Transaction version: ${confirmed.value}")
+       is AptosResult.Failure -> println("Failed: ${confirmed.error.message}")
+     }
+     ```
 </Steps>
 
 For finer control over transaction execution, including custom fee payers or multi-agent transactions, see [Building Transactions](/build/sdks/community-sdks/kotlin-sdk/building-transactions).

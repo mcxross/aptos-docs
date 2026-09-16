@@ -10,7 +10,7 @@ import { Aside } from '@astrojs/starlight/components';
 Kaptos Kotlin SDK 通过 `aptos.transactions` 提供基于命名空间的交易操作。
 
 <Aside type="note">
-所有这些方法都返回一个 `AptosResult<T>`。您可以使用 `when` 进行模式匹配，或使用扩展函数（如 `.map()`、`.fold()`、`.getOrNull()`、`.onSuccess()` 和 `.onFailure()`）来链式调用并处理错误。
+  所有这些方法都返回一个 `AptosResult<T>`。您可以使用 `when` 进行模式匹配，或使用扩展函数（如 `.map()`、`.fold()`、`.getOrNull()`、`.onSuccess()` 和 `.onFailure()`）来链式调用并处理错误。
 </Aside>
 
 ## 创建账户（设置）
@@ -24,88 +24,180 @@ val bob = Account.generate()
 aptos.faucet.fund(alice.accountAddress, 100_000_000UL)
 ```
 
-## 构建负载 (Payload)
+## 负载构建风格 (Payload Construction Styles)
 
-创建一个 entry function 负载，来描述您想调用的链上函数。`entryFunctionPayload` 会自动获取链上 ABI，将参数编码为 BCS 字节。
+entry function 负载描述了要在链上执行的 Move 函数。Kaptos 支持多种负载构建风格以适应不同的开发需求：
+
+### 1. 简写语法 (`entryFunctionOf`)
+
+最常用且最简洁的方式。标准 Kotlin 类型（`AccountAddress`、`ULong`、`Boolean`、`String`、`ByteArray` 等）会自动推断为 Move 参数，类型参数可直接传入字符串或 `TypeTag` 常量：
+
+```kotlin
+// 带有类型参数
+val payload = TransactionPayload.entryFunctionOf(
+  function = "0x1::coin::transfer",
+  typeArguments = listOf("0x1::aptos_coin::AptosCoin"), // 或 listOf(TypeTag.AptosCoin)
+  bob.accountAddress,
+  1_000_000UL,
+)
+
+// 不带类型参数
+val simplePayload = TransactionPayload.entryFunctionOf(
+  "0x1::aptos_account::transfer",
+  bob.accountAddress,
+  1_000_000UL,
+)
+```
+
+### 2. 类型安全 DSL 构建器
+
+在构建器 lambda 中使用 Kotlin 的一元加号（`+`）操作符，语法更清晰且具表现力：
+
+```kotlin
+val payload = TransactionPayload.entryFunction(
+  function = "0x1::coin::transfer",
+  typeArguments = listOf(TypeTag.AptosCoin),
+) {
+  +bob.accountAddress
+  +1_000_000UL
+}
+```
+
+### 3. 基于 ABI 解析的负载 (`entryFunctionPayload`)
+
+从全节点自动获取链上 Move 模块 ABI，验证参数类型，并将值（例如数字类型和十六进制字符串）自动智能强制转换为 BCS 编码字节：
 
 ```kotlin
 val payload = aptos.transactions.entryFunctionPayload(
   function = "0x1::coin::transfer",
-  typeArguments = listOf(TypeTag.from("0x1::aptos_coin::AptosCoin")),
+  typeArguments = listOf(TypeTag.AptosCoin),
+  arguments = listOf(bob.accountAddress, 1_000_000UL),
+).getOrNull()!!
+```
+
+### 4. 直接函数构建
+
+跳过单独构建负载的步骤，直接将函数名和参数传递给 `transactions.build`：
+
+```kotlin
+val txn = aptos.transactions.build(
+  sender = alice.accountAddress,
+  function = "0x1::coin::transfer",
+  typeArguments = listOf("0x1::aptos_coin::AptosCoin"),
+  arguments = listOf(bob.accountAddress, 1_000_000UL),
+).getOrNull()!!
+```
+
+### 5. 显式长语法 (`MoveArgument` 与 `TypeTag`)
+
+用于高级场景、自定义序列化或保持完全向后兼容，显式构造 `MoveArgument` 与 `TypeTag` 实例：
+
+```kotlin
+val payload = TransactionPayload.entryFunction(
+  function = "0x1::coin::transfer",
+  typeArguments = listOf(TypeTag.fromString("0x1::aptos_coin::AptosCoin")),
   arguments = listOf(
-    MoveArgument.from(bob.accountAddress),
-    MoveArgument.from(1_000_000UL),
+    MoveArgument.Address(bob.accountAddress),
+    MoveArgument.U64(1_000_000UL),
   ),
 )
 ```
 
-## 构建交易
+***
 
-构建一个结合了发送方和负载的原始交易。
+## 显式交易执行流程 (Explicit Pipeline)
+
+显式流程清晰地展示了交易生命周期的各个底层步骤：构建未签名交易、使用账户签名者生成验证器、提交到网络，以及等待链上确认。
+
+### 1. 构建交易
+
+将发送方地址与负载结合为原始未签名交易：
 
 ```kotlin
 val txn = aptos.transactions.build(
   sender = alice.accountAddress,
   payload = payload,
-)
+).getOrNull()!!
 ```
 
-您可以选择指定 `TransactionOptions`，例如您愿意支付的最高 gas 数量。
+您还可以选择指定 `TransactionOptions`（如 gas 限制或重放保护设置）：
 
 ```kotlin
 val txn = aptos.transactions.build(
   sender = alice.accountAddress,
   payload = payload,
   options = TransactionOptions(maxGasAmount = 20_000UL),
-)
+).getOrNull()!!
 ```
 
-## 签名交易
+### 2. 签名交易
 
-签署该交易以创建发送方验证器。
+使用发送方账户对原始交易进行签名，生成发送方验证器：
 
 ```kotlin
-val auth = aptos.transactions.sign(signer = alice, transaction = txn)
+val auth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
 ```
 
-## 提交交易
+### 3. 提交交易
 
-将签署好的交易提交到网络。
+将签署好的交易提交到 Aptos 网络：
 
 ```kotlin
 val pending = aptos.transactions.submit(
   transaction = txn,
   senderAuthenticator = auth,
-)
+).getOrNull()!!
 ```
 
-## 等待确认
+### 4. 等待确认
 
-等待提交的交易处理完成。
+等待提交的交易处理完成并提交到账本：
 
 ```kotlin
 val confirmed = aptos.transactions.waitForTransaction(pending)
 ```
 
-## 签名、提交并等待（一体化）
+***
 
-您可以将构建、签名、提交和等待组合成一次调用：
+## 一体化便捷方法 (All-in-One Convenience)
+
+熟悉显式执行流程后，Kaptos 提供了便捷的一体化方法来加速日常交易的编写。
+
+### 签名、提交并等待 (`submitAndWait`)
+
+将构建、签名、提交和等待合并为一次调用：
 
 ```kotlin
+// 使用预先构建的负载
 val confirmed = aptos.transactions.submitAndWait(
   signer = alice,
   payload = payload,
 )
+
+// 或直接传入函数名与参数
+val directConfirmed = aptos.transactions.submitAndWait(
+  signer = alice,
+  function = "0x1::aptos_account::transfer",
+  arguments = listOf(bob.accountAddress, 1_000_000UL),
+)
 ```
 
-## 签名并提交
+### 签名并提交 (`signAndSubmit`)
 
-如果您只想进行签名和提交，而不想等待确认：
+提交交易后立即返回，无需等待链上确认：
 
 ```kotlin
+// 使用预先构建的负载
 val pending = aptos.transactions.signAndSubmit(
   signer = alice,
   payload = payload,
+)
+
+// 或直接传入函数名与参数
+val directPending = aptos.transactions.signAndSubmit(
+  signer = alice,
+  function = "0x1::aptos_account::transfer",
+  arguments = listOf(bob.accountAddress, 1_000_000UL),
 )
 ```
 

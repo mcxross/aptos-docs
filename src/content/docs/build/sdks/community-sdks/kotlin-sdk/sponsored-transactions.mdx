@@ -21,11 +21,18 @@ To execute a sponsored transaction, you must build the payload, sign it with bot
 All methods return an `AptosResult<T>`, which you can handle with a `when` expression or extension functions.
 
 ```kotlin
+// Build the payload using the concise shorthand
+val payload = TransactionPayload.entryFunctionOf(
+  "0x1::aptos_account::transfer",
+  bob.accountAddress,
+  1_000_000UL,
+)
+
 // 1. Build the transaction with the fee payer specified
 val txn = aptos.transactions.buildFeePayer(
   sender = alice.accountAddress,
   payload = payload,
-  feePayer = sponsor.accountAddress
+  feePayer = sponsor.accountAddress,
 ).getOrNull()!!
 
 // 2. Sender signs
@@ -38,27 +45,30 @@ val feePayerAuth = aptos.transactions.sign(signer = sponsor, transaction = txn).
 val pending = aptos.transactions.submit(
   transaction = txn,
   senderAuthenticator = senderAuth,
-  feePayerAuthenticator = feePayerAuth
-)
+  feePayerAuthenticator = feePayerAuth,
+).getOrNull()!!
+
+// 5. Wait for confirmation
+val confirmed = aptos.transactions.waitForTransaction(pending)
 ```
 
 <Aside>
-If you are using an external fee payer service (like a Gas Station) where you don't have the sponsor's private key, you can build a request for the external service:
+  If you are using an external fee payer service (like a Gas Station) where you don't have the sponsor's private key, you can build a request for the external service:
 
-```kotlin
-// Build with a zero-address placeholder (no feePayer specified)
-val txn = aptos.transactions.buildFeePayer(
-  sender = alice.accountAddress,
-  payload = payload,
-).getOrNull()!!
+  ```kotlin
+  // Build with a zero-address placeholder (no feePayer specified)
+  val txn = aptos.transactions.buildFeePayer(
+    sender = alice.accountAddress,
+    payload = payload,
+  ).getOrNull()!!
 
-// Sender signs the transaction
-val senderAuth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
+  // Sender signs the transaction
+  val senderAuth = aptos.transactions.sign(signer = alice, transaction = txn).getOrNull()!!
 
-// Create a request for an external Gas Station
-val request = aptos.transactions.externalFeePayerRequest(
-  transaction = txn,
-  senderAuthenticator = senderAuth,
-).getOrNull()!!
-```
+  // Create a request for an external Gas Station
+  val request = aptos.transactions.externalFeePayerRequest(
+    transaction = txn,
+    senderAuthenticator = senderAuth,
+  ).getOrNull()!!
+  ```
 </Aside>

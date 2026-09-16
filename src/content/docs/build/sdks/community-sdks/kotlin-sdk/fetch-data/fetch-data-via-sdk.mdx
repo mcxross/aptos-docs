@@ -57,15 +57,28 @@ val faBalance = aptos.accounts.getBalance(
   address,
   AccountAsset.fungibleAsset("0xa"),
 ).getOrNull()!!
+
+// Or read coin balance via concise view call shorthand
+val coinBalance = aptos.views.callOf<AptosCoin>(
+  function = "0x1::coin::balance",
+  address,
+).getOrNull()!!
 ```
 
 ## Read via Move view functions
 
-Use the `views` service to evaluate view functions defined in Move modules:
+Use the `views` service to evaluate view functions defined in Move modules. The `callOf` shorthand automatically validates arguments against the on-chain ABI and coerces standard Kotlin types:
 
 ```kotlin
-val result = aptos.views.call(
+// Concise view call without arguments
+val result = aptos.views.callOf(
   function = "0x1::chain_id::get",
+).getOrNull()!!
+
+// Concise view call with reified type argument and inferred arguments
+val balance = aptos.views.callOf<AptosCoin>(
+  function = "0x1::coin::balance",
+  address,
 ).getOrNull()!!
 ```
 
