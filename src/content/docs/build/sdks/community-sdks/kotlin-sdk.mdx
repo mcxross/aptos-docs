@@ -4,27 +4,10 @@ description: "Kaptos is a community-developed, feature-rich Kotlin Multiplatform
 sidebar:
   label: "Kaptos Overview"
 ---
+
 import { Aside, CardGrid, LinkCard, TabItem, Tabs } from '@astrojs/starlight/components';
 
-Kaptos is a powerful, expressive Kotlin Multiplatform SDK for the Aptos blockchain. It features a namespaced service API, managed lifecycle, and full type safety across multiple platforms.
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Android-3DDC84?logo=android&logoColor=white" alt="Android"/>
-  <img src="https://img.shields.io/badge/iOS-000000?logo=ios&logoColor=white" alt="iOS"/>
-  <img src="https://img.shields.io/badge/tvOS-000000?logo=apple&logoColor=white" alt="tvOS"/>
-  <img src="https://img.shields.io/badge/watchOS-000000?logo=apple&logoColor=white" alt="watchOS"/>
-  <img src="https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white" alt="Node.js"/>
-  <img src="https://img.shields.io/badge/JVM-ED8B00?logo=openjdk&logoColor=white" alt="JVM"/>
-  <img src="https://img.shields.io/badge/Linux-FCC624?logo=linux&logoColor=black" alt="Linux"/>
-  <img src="https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white" alt="macOS"/>
-  <img src="https://img.shields.io/badge/Windows-0078D6?logo=windows&logoColor=white" alt="Windows"/>
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/maven-central/v/xyz.mcxross.kaptos/kaptos?label=Maven%20Central&color=blue" alt="Maven Central"/>
-  <img src="https://img.shields.io/nexus/s/xyz.mcxross.kaptos/kaptos?server=https%3A%2F%2Fs01.oss.sonatype.org&label=Snapshot&color=orange" alt="Snapshot"/>
-  <img src="https://img.shields.io/badge/SDK_Reference-Dokka-purple" alt="SDK Reference"/>
-</p>
+Kaptos is an expressive Kotlin Multiplatform SDK for the Aptos blockchain. It features a namespaced service API, managed lifecycle, and full type safety across multiple platforms.
 
 ## Features
 
@@ -38,105 +21,109 @@ Kaptos is a powerful, expressive Kotlin Multiplatform SDK for the Aptos blockcha
 - **Managed Lifecycle:** Auto-closing managed scope (`aptos { }`) that takes care of resource cleanup automatically.
 
 <Aside type="note">
-Kaptos is actively under development. Ensure you are using the latest version to get all new features and API stability.
+  Kaptos is actively under development. Ensure you are using the latest version to get all new features and API stability.
 </Aside>
 
 ## Installation
 
 <Tabs>
   <TabItem label="Multiplatform">
-  ```kotlin
-  sourceSets {
-      val commonMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="JVM">
-  ```kotlin
-  dependencies {
-      implementation("xyz.mcxross.kaptos:kaptos:<version>")
-  }
-  ```
+    ```kotlin
+    dependencies {
+        implementation("xyz.mcxross.kaptos:kaptos:<version>")
+    }
+    ```
   </TabItem>
+
   <TabItem label="Android">
-  <Aside type="tip">
-  For Android apps, it is recommended to ensure your app has internet permissions configured.
-  </Aside>
-  ```kotlin
-  dependencies {
-      implementation("xyz.mcxross.kaptos:kaptos:<version>")
-  }
-  ```
+    ```kotlin
+    dependencies {
+        implementation("xyz.mcxross.kaptos:kaptos:<version>")
+    }
+    ```
   </TabItem>
+
   <TabItem label="iOS">
-  ```kotlin
-  sourceSets {
-      val iosMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val iosMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="JS">
-  ```kotlin
-  sourceSets {
-      val jsMain by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val jsMain by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="Linux">
-  ```kotlin
-  sourceSets {
-      val linuxX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val linuxX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="macOS">
-  ```kotlin
-  sourceSets {
-      val macosX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-      val macosArm64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val macosX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+        val macosArm64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
+
   <TabItem label="Windows">
-  ```kotlin
-  sourceSets {
-      val mingwX64Main by getting {
-          dependencies {
-              implementation("xyz.mcxross.kaptos:kaptos:<version>")
-          }
-      }
-  }
-  ```
+    ```kotlin
+    sourceSets {
+        val mingwX64Main by getting {
+            dependencies {
+                implementation("xyz.mcxross.kaptos:kaptos:<version>")
+            }
+        }
+    }
+    ```
   </TabItem>
 </Tabs>
 
 ## Perform a Transaction
 
-Kaptos provides a managed lifecycle API that simplifies setup, execution, and cleanup. 
+Kaptos provides a managed lifecycle API that simplifies setup, execution, and cleanup.
 
 ```kotlin
 aptos(AptosConfig(network = Network.DEVNET)) {
@@ -157,5 +144,6 @@ aptos(AptosConfig(network = Network.DEVNET)) {
 
 <CardGrid>
   <LinkCard title="Quickstart Guide" href="/build/sdks/community-sdks/kotlin-sdk/quickstart" description="Step-by-step tutorial to get started with Kaptos." />
+
   <LinkCard title="GitHub Samples" href="https://github.com/mcxross/kaptos/tree/main/sample" description="Explore full working samples in the Kaptos repository." />
 </CardGrid>
