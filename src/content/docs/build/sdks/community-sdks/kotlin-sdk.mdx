@@ -67,30 +67,6 @@ Kaptos is a Kotlin Multiplatform SDK that brings comprehensive Aptos protocol su
     ```
   </TabItem>
 
-  <TabItem label="JS">
-    ```kotlin
-    sourceSets {
-        val jsMain by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
-  <TabItem label="Linux">
-    ```kotlin
-    sourceSets {
-        val linuxX64Main by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
   <TabItem label="macOS">
     ```kotlin
     sourceSets {
@@ -100,18 +76,6 @@ Kaptos is a Kotlin Multiplatform SDK that brings comprehensive Aptos protocol su
             }
         }
         val macosArm64Main by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
-  <TabItem label="Windows">
-    ```kotlin
-    sourceSets {
-        val mingwX64Main by getting {
             dependencies {
                 implementation("xyz.mcxross.kaptos:kaptos:<version>")
             }
@@ -141,10 +105,16 @@ aptos(AptosConfig(network = Network.DEVNET)) {
 }
 ```
 
-## Examples
+## Production Showcase: Flare
+
+[**Flare**](https://github.com/emeieiron/flare) is an open-source perpetual and spot trading mobile client (Android & iOS) built with Kotlin Multiplatform and Kaptos. It leverages Kaptos for end-to-end Move transaction flows—executing perpetual and spot entry calls, managing AIP-80 keys, delegating subaccounts, and sponsoring gas.
+
+## Examples & Showcase
 
 <CardGrid>
-  <LinkCard title="Quickstart Guide" href="/build/sdks/community-sdks/kotlin-sdk/quickstart" description="Step-by-step tutorial to get started with Kaptos." />
+  <LinkCard title="Flare Repository" href="https://github.com/emeieiron/flare" description="Explore Flare's open-source codebase and mobile architecture." />
+
+  <LinkCard title="Quickstart Guide" href="/build/sdks/community-sdks/kotlin-sdk/quickstart" description="Step-by-step tutorial to get started building with Kaptos." />
 
   <LinkCard title="GitHub Samples" href="https://github.com/mcxross/kaptos/tree/main/sample" description="Explore full working samples in the Kaptos repository." />
 </CardGrid>

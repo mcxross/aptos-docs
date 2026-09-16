@@ -71,30 +71,6 @@ Kaptos 是一个 Kotlin Multiplatform SDK，为 Android、iOS 和 JVM 后端带�
     ```
   </TabItem>
 
-  <TabItem label="JS">
-    ```kotlin
-    sourceSets {
-        val jsMain by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
-  <TabItem label="Linux">
-    ```kotlin
-    sourceSets {
-        val linuxX64Main by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
   <TabItem label="macOS">
     ```kotlin
     sourceSets {
@@ -104,18 +80,6 @@ Kaptos 是一个 Kotlin Multiplatform SDK，为 Android、iOS 和 JVM 后端带�
             }
         }
         val macosArm64Main by getting {
-            dependencies {
-                implementation("xyz.mcxross.kaptos:kaptos:<version>")
-            }
-        }
-    }
-    ```
-  </TabItem>
-
-  <TabItem label="Windows">
-    ```kotlin
-    sourceSets {
-        val mingwX64Main by getting {
             dependencies {
                 implementation("xyz.mcxross.kaptos:kaptos:<version>")
             }
@@ -145,10 +109,16 @@ aptos(AptosConfig(network = Network.DEVNET)) {
 }
 ```
 
-## 示例
+## 实战案例：Flare
+
+[**Flare**](https://github.com/emeieiron/flare) 是一个基于 Kotlin Multiplatform 和 Kaptos 构建的开源 Android 与 iOS 永续及现货移动端交易客户端。它借助 Kaptos 实现了完整的 Move 交易全流程——执行永续与现货入口函数调用、管理 AIP-80 密钥、委托子账户以及赞助 Gas 费用。
+
+## 示例与实战 (Examples & Showcase)
 
 <CardGrid>
+  <LinkCard title="Flare 代码仓库" href="https://github.com/emeieiron/flare" description="探索 Flare 的开源代码与移动端架构。" />
+
   <LinkCard title="快速入门指南" href="/zh/build/sdks/community-sdks/kotlin-sdk/quickstart" description="帮助您开始使用 Kaptos 的分步教程。" />
 
-  <LinkCard title="GitHub 示例" href="https://github.com/mcxross/kaptos/tree/main/sample" description="在 Kaptos 仓库中探索完整的可用示例。" />
+  <LinkCard title="GitHub 示例代码" href="https://github.com/mcxross/kaptos/tree/main/sample" description="在 Kaptos 代码仓库中探索完整的可用示例。" />
 </CardGrid>
